@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request
-import telebot
+import telebot 
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")  # Asegúrate que esta variable está en Render
 print(f"Token leído: {TOKEN!r}")  # Imprime el token entre comillas para detectar espacios o None
@@ -20,6 +20,7 @@ def send_welcome(message):
 def webhook():
     try:
         json_str = request.get_data().decode("utf-8")
+        print(f"Payload recibido:\n{json_str}")  # 👈 Agrega esto
         update = telebot.types.Update.de_json(json_str)
         bot.process_new_updates([update])
         return "OK", 200

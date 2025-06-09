@@ -1,7 +1,7 @@
 import os
 import telebot
 
-TOKEN = os.getenv("TELEGRAMTOKEN")
+TOKEN = os.getenv("TELEGRAM_TOKEN")
 if not TOKEN:
     print("Error: No se encontró la variable de entorno TELEGRAM_TOKEN")
     exit(1)
