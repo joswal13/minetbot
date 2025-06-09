@@ -8,6 +8,7 @@ print(f"Token leído: {TOKEN!r}")  # Imprime el token entre comillas para detect
 if TOKEN is None:
     print("ERROR: La variable de entorno TELEGRAM_TOKEN no está definida.")
     exit(1)
+
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
@@ -20,12 +21,12 @@ def send_welcome(message):
 def webhook():
     try:
         json_str = request.get_data().decode("utf-8")
-        print(f"Payload recibido:\n{json_str}")  # 👈 Agrega esto
+        print(f"🚨 Payload recibido:\n{json_str}")  # Debug del contenido recibido
         update = telebot.types.Update.de_json(json_str)
         bot.process_new_updates([update])
         return "OK", 200
     except Exception as e:
-        print(f"Error procesando update: {e}")
+        print(f"❌ Error procesando update: {e}")
         return "Error", 500
 
 @app.route("/", methods=["GET"])
@@ -33,6 +34,11 @@ def home():
     return "Bot online"
 
 if __name__ == "__main__":
+    WEBHOOK_URL = f"https://minetbot.onrender.com/{TOKEN}"
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL)
+    print(f"✅ Webhook configurado en: {WEBHOOK_URL}")
+
     port = int(os.environ.get("PORT", 5000))
     print(f"Iniciando servidor en puerto {port}")
     app.run(host="0.0.0.0", port=port)
