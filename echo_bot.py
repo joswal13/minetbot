@@ -21,13 +21,24 @@ def send_welcome(message):
 def webhook():
     try:
         json_str = request.get_data().decode("utf-8")
-        print(f"🚨 Payload recibido:\n{json_str}")  # Debug del contenido recibido
+        print(f"🚨 Payload recibido:\n{json_str}")
         update = telebot.types.Update.de_json(json_str)
-        bot.process_new_updates([update])
+
+        if update.message:
+            chat_id = update.message.chat.id
+            text = update.message.text
+            print(f"➡️ Mensaje recibido: {text} de {chat_id}")
+
+            if text and text.startswith("/start"):
+                bot.send_message(chat_id, "Hola, soy tu bot!")
+            elif text and text.startswith("/help"):
+                bot.send_message(chat_id, "Puedo ayudarte con /start y /help.")
+
         return "OK", 200
     except Exception as e:
         print(f"❌ Error procesando update: {e}")
         return "Error", 500
+
 
 @app.route("/", methods=["GET"])
 def home():
