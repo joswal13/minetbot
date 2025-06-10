@@ -1,12 +1,12 @@
 import os
 from flask import Flask, request
-import telebot 
+import telebot
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")  # Asegúrate que esta variable está en Render
 print(f"Token leído: {TOKEN!r}")  # Imprime el token entre comillas para detectar espacios o None
 
 if TOKEN is None:
-    print("ERROR: La variable de entorno TELEGRAM_TOKEN no está definida.")
+    print("❌ ERROR: La variable de entorno TELEGRAM_TOKEN no está definida.")
     exit(1)
 
 bot = telebot.TeleBot(TOKEN)
@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 @bot.message_handler(commands=["start", "help"])
 def send_welcome(message):
-    print(f"Recibido /start de {message.from_user.id}")
+    print(f"✅ Recibido /start de {message.from_user.id}")
     bot.reply_to(message, "Hola, soy tu bot!")
 
 @app.route(f"/{TOKEN}", methods=["POST"])
@@ -34,11 +34,16 @@ def home():
     return "Bot online"
 
 if __name__ == "__main__":
-    WEBHOOK_URL = f"https://minetbot.onrender.com/{TOKEN}"
+    # Obtiene el hostname de Render o usa uno fijo
+    hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "minetbot.onrender.com")
+    WEBHOOK_URL = f"https://{hostname}/{TOKEN}"
+
+    # Configura el webhook de Telegram
     bot.remove_webhook()
     bot.set_webhook(url=WEBHOOK_URL)
     print(f"✅ Webhook configurado en: {WEBHOOK_URL}")
 
+    # Inicia el servidor Flask
     port = int(os.environ.get("PORT", 5000))
-    print(f"Iniciando servidor en puerto {port}")
+    print(f"🚀 Iniciando servidor en puerto {port}")
     app.run(host="0.0.0.0", port=port)
